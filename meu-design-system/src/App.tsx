@@ -4,6 +4,8 @@ import { useScreenInit } from './useScreenInit.tsx'
 import { Login } from './screens/Login'
 import { Cadastro } from './screens/Cadastro'
 import { RedefinirSenha } from './screens/RedefinirSenha'
+import { Perfil } from './screens/Perfil'
+import { EditarPerfil } from './screens/EditarPerfil'
 
 export function App() {
   const screenInit = useScreenInit()
@@ -15,6 +17,9 @@ export function App() {
       case 'login': return <Login onNavigate={setActiveTab} />
       case 'cadastro': return <Cadastro onNavigate={setActiveTab} />
       case 'redefinir-senha': return <RedefinirSenha onNavigate={setActiveTab} />
+      case 'perfil': return <Perfil onNavigate={setActiveTab} />
+      case 'editar-perfil': return <EditarPerfil onNavigate={setActiveTab} />
+      default: return <Login onNavigate={setActiveTab} />
     }
   }
 

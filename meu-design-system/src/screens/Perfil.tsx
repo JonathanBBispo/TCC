@@ -1,7 +1,6 @@
-// import React from 'react'
+import React from 'react'
 import {
   Edit2,
-  MapPin,
   Settings,
   Bell,
   Shield,
@@ -10,18 +9,27 @@ import {
   ChevronRight,
   MessageSquare,
   Users,
-  BarChart2,
+  ListOrdered,
+  User,
 } from 'lucide-react'
-export function Perfil() {
+
+interface PerfilProps {
+  onNavigate: (screen: string) => void;
+}
+
+export function Perfil({ onNavigate }: PerfilProps) {
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50">
+    <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
       {/* MOBILE LAYOUT */}
-      <div className="flex flex-col h-full lg:hidden">
+      <div className="flex flex-col h-full w-full overflow-y-auto lg:hidden">
         {/* Header */}
         <div className="px-4 py-4 flex items-center justify-between bg-white sticky top-0 z-10 border-b border-slate-100">
           <div className="w-10"></div> {/* Spacer */}
           <h1 className="text-lg font-bold text-slate-900">Meu Perfil</h1>
-          <button className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors">
+          <button 
+            onClick={() => onNavigate('editar-perfil')}
+            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none"
+          >
             <Edit2 className="w-5 h-5" />
           </button>
         </div>
@@ -30,20 +38,13 @@ export function Perfil() {
         <div className="bg-white px-6 py-8 flex flex-col items-center border-b border-slate-200">
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-brand-100 rounded-full scale-110"></div>
-            <img
-              src="https://i.pravatar.cc/150?img=32"
-              alt="Avatar"
-              className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
-            />
+            <div className="relative w-24 h-24 rounded-full bg-slate-200 border-4 border-white shadow-sm flex items-center justify-center text-slate-400">
+              <User className="w-12 h-12" />
+            </div>
           </div>
 
           <h2 className="text-2xl font-bold text-slate-900">Ana Clara</h2>
           <p className="text-slate-500 font-medium">@anaclara</p>
-
-          <div className="flex items-center gap-1.5 text-slate-500 mt-2 text-sm">
-            <MapPin className="w-4 h-4" />
-            <span>São Paulo, SP</span>
-          </div>
 
           <p className="text-center text-slate-600 mt-4 text-sm max-w-[280px]">
             Gerenciando as redes sociais da minha loja. Adoro café e design!
@@ -164,7 +165,10 @@ export function Perfil() {
             </div>
             <ChevronRight className="w-5 h-5 text-slate-300" />
           </button>
-          <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors">
+          <button 
+            onClick={() => onNavigate('login')}
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors"
+          >
             <div className="flex items-center gap-3 text-red-600">
               <LogOut className="w-5 h-5" />
               <span className="font-medium">Sair</span>
@@ -174,22 +178,21 @@ export function Perfil() {
       </div>
 
       {/* DESKTOP LAYOUT */}
-      <div className="hidden lg:flex h-full overflow-hidden">
+      <div className="hidden lg:flex h-full w-full overflow-hidden">
         {/* LEFT SIDEBAR */}
-        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center mb-8 shadow-sm">
-            <MessageSquare className="w-6 h-6 text-white" />
-          </div>
-
-          <div className="flex flex-col gap-4 flex-1 w-full px-3">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20 h-full">
+          <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
+            <button 
+              onClick={() => onNavigate('conversa')}
+              className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            >
               <MessageSquare className="w-6 h-6" />
             </button>
             <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
               <Users className="w-6 h-6" />
             </button>
             <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
-              <BarChart2 className="w-6 h-6" />
+              <ListOrdered className="w-6 h-6" />
             </button>
           </div>
 
@@ -198,17 +201,15 @@ export function Perfil() {
               <Settings className="w-6 h-6" />
             </button>
             <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden">
-              <img
-                src="https://i.pravatar.cc/150?img=32"
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
+                <User className="w-5 h-5" />
+              </div>
             </button>
           </div>
         </div>
 
         {/* MIDDLE COLUMN - Profile Info */}
-        <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 overflow-y-auto">
+        <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 h-full overflow-y-auto">
           <div className="p-8 flex flex-col items-center">
             <h1 className="text-2xl font-bold text-slate-900 w-full mb-8">
               Meu Perfil
@@ -216,20 +217,13 @@ export function Perfil() {
 
             <div className="relative mb-6">
               <div className="absolute inset-0 bg-brand-100 rounded-full scale-110"></div>
-              <img
-                src="https://i.pravatar.cc/150?img=32"
-                alt="Avatar"
-                className="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-sm"
-              />
+              <div className="relative w-32 h-32 rounded-full bg-slate-200 border-4 border-white shadow-sm flex items-center justify-center text-slate-400">
+                <User className="w-16 h-16" />
+              </div>
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900">Ana Clara</h2>
             <p className="text-slate-500 font-medium text-lg">@anaclara</p>
-
-            <div className="flex items-center gap-2 text-slate-500 mt-3">
-              <MapPin className="w-5 h-5" />
-              <span>São Paulo, SP</span>
-            </div>
 
             <p className="text-center text-slate-600 mt-6 leading-relaxed">
               Gerenciando as redes sociais da minha loja. Adoro café e design!
@@ -263,11 +257,14 @@ export function Perfil() {
         </div>
 
         {/* RIGHT MAIN AREA */}
-        <div className="flex-1 overflow-y-auto p-12 relative">
+        <div className="flex-1 h-full overflow-y-auto p-12 relative">
           <div className="max-w-4xl mx-auto">
             {/* Top Actions */}
             <div className="flex justify-end mb-8">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm">
+              <button 
+                onClick={() => onNavigate('editar-perfil')}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm outline-none"
+              >
                 <Edit2 className="w-4 h-4" />
                 Editar Perfil
               </button>
@@ -417,7 +414,10 @@ export function Perfil() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors">
+                  <button 
+                    onClick={() => onNavigate('login')}
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors"
+                  >
                     <div className="flex items-center gap-4 text-red-600">
                       <LogOut className="w-5 h-5" />
                       <span className="font-medium">Sair</span>
