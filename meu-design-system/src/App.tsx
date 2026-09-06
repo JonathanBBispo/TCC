@@ -3,6 +3,7 @@ import { useScreenInit } from './useScreenInit.tsx'
 
 import { Login } from './screens/Login'
 import { Cadastro } from './screens/Cadastro'
+import { RedefinirSenha } from './screens/RedefinirSenha'
 
 export function App() {
   const screenInit = useScreenInit()
@@ -13,7 +14,7 @@ export function App() {
     switch (activeTab) {
       case 'login': return <Login onNavigate={setActiveTab} />
       case 'cadastro': return <Cadastro onNavigate={setActiveTab} />
-
+      case 'redefinir-senha': return <RedefinirSenha onNavigate={setActiveTab} />
     }
   }
 

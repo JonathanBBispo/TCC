@@ -7,9 +7,11 @@ interface LoginProps {
 
 export function Login({ onNavigate } : LoginProps) {
   const [showPassword, setShowPassword] = useState(false)
+  
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-white overflow-hidden">
-      <div className="hidden lg:flex w-1/2 bg-brand-500 relative flex-col justify-center items-center p-12 overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
+      {/* Lateral Esquerda Fixa */}
+      <div className="hidden lg:flex w-1/2 bg-brand-500 relative flex-col justify-center items-center p-12 h-full overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-600 rounded-full mix-blend-overlay filter blur-[100px]"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-400 rounded-full mix-blend-overlay filter blur-[100px]"></div>
@@ -26,9 +28,7 @@ export function Login({ onNavigate } : LoginProps) {
         </div>
         <div
           className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 animate-pulse"
-          style={{
-            animationDelay: '1s',
-          }}
+          style={{ animationDelay: '1s' }}
         >
           <svg
             className="w-10 h-10 text-white"
@@ -40,9 +40,7 @@ export function Login({ onNavigate } : LoginProps) {
         </div>
         <div
           className="absolute top-1/2 right-1/3 w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg transform -rotate-6 animate-pulse"
-          style={{
-            animationDelay: '2s',
-          }}
+          style={{ animationDelay: '2s' }}
         >
           <svg
             className="w-6 h-6 text-white"
@@ -67,8 +65,9 @@ export function Login({ onNavigate } : LoginProps) {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto">
-        <div className="w-full max-w-md mx-auto px-6 py-12 flex flex-col justify-center">
+      {/* Lateral Direita (Scroll isolado e formulário centralizado) */}
+      <div className="w-full lg:w-1/2 h-full overflow-y-auto flex flex-col relative">
+        <div className="w-full max-w-md m-auto px-6 py-12 flex flex-col">
           {/* Logo & Header (Mobile Only) */}
           <div className="flex flex-col items-center mb-10 lg:hidden">
             <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
@@ -112,7 +111,7 @@ export function Login({ onNavigate } : LoginProps) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 outline-none"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -122,12 +121,13 @@ export function Login({ onNavigate } : LoginProps) {
                 </button>
               </div>
               <div className="flex justify-end mt-2">
-                <a
-                  href="#"
-                  className="text-sm font-medium text-brand-600 hover:text-brand-700"
+                <button
+                  type="button"
+                  onClick={() => onNavigate('redefinir-senha')}
+                  className="text-sm font-medium text-brand-600 hover:text-brand-700 bg-transparent border-none p-0 cursor-pointer outline-none"
                 >
                   Esqueci minha senha
-                </a>
+                </button>
               </div>
             </div>
 

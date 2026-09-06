@@ -1,4 +1,4 @@
-import { ArrowLeft, Camera, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 interface CadastroProps {
   onNavigate: (screen: string) => void;
@@ -6,7 +6,7 @@ interface CadastroProps {
 
 export function Cadastro({ onNavigate }: CadastroProps) {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-white overflow-hidden">
+    <div className="flex min-h-screen bg-white overflow-hidden">
       <div className="hidden lg:flex w-1/2 bg-slate-900 relative flex-col justify-center items-center p-12 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500 rounded-full mix-blend-overlay filter blur-[100px]"></div>
@@ -58,7 +58,7 @@ export function Cadastro({ onNavigate }: CadastroProps) {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex flex-col p-0 lg:p-12 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center p-0 lg:p-12 overflow-y-auto">
         <div className="px-4 py-4 flex items-center sticky top-0 bg-white/80 backdrop-blur-md z-10 lg:hidden">
           <button 
             onClick={() => onNavigate('login')}
@@ -81,17 +81,6 @@ export function Cadastro({ onNavigate }: CadastroProps) {
             <p className="text-slate-500 mt-1 lg:mt-2">
               Preencha os dados para começar
             </p>
-          </div>
-
-          <div className="flex justify-center lg:justify-start mb-8 lg:mb-10">
-            <div className="relative">
-              <div className="w-24 h-24 bg-slate-100 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors cursor-pointer">
-                <Camera className="w-8 h-8" />
-              </div>
-              <button className="absolute bottom-0 right-0 w-8 h-8 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm hover:bg-brand-600 transition-colors">
-                <span className="text-lg leading-none mb-0.5">+</span>
-              </button>
-            </div>
           </div>
 
           <div className="space-y-4 lg:space-y-6">
@@ -117,20 +106,6 @@ export function Cadastro({ onNavigate }: CadastroProps) {
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-              <div className="space-y-1.5 lg:space-y-2">
-                <label className="block text-sm font-medium text-slate-700">
-                  Telefone
-                </label>
-                <input
-                  type="tel"
-                  placeholder="(00) 00000-0000"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
-                />
-              </div>
-              <div className="hidden md:block"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
