@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react'
-
 import {
   ArrowLeft,
   Check,
@@ -11,7 +10,6 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 
-// 1. Interface adicionada para receber a função de navegação
 interface RedefinirSenhaProps {
   onNavigate: (screen: string) => void;
 }
@@ -24,7 +22,6 @@ const etapas: { id: Etapa; label: string }[] = [
   { id: 'nova-senha', label: 'Nova senha' },
 ]
 
-// 2. onNavigate desestruturado nas propriedades
 export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
   const [etapa, setEtapa] = useState<Etapa>('email')
   const [email, setEmail] = useState('')
@@ -32,12 +29,15 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
   const [senha, setSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [erro, setErro] = useState('')
   const codigoRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const indiceEtapa = etapas.findIndex((e) => e.id === etapa)
   const codigoCompleto = codigo.every((d) => d !== '')
-  const senhasConferem =
-    senha.length >= 8 && senha === confirmarSenha
+  const contemNumero = /\d/.test(senha)
+  const tamanhoValido = senha.length >= 8
+  const senhasConferem = tamanhoValido && contemNumero && senha === confirmarSenha
 
   const handleCodigoChange = (indice: number, valor: string) => {
     const digito = valor.replace(/\D/g, '').slice(-1)
@@ -58,8 +58,75 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
     }
   }
 
-  // 3. Lógica de voltar ajustada para ir ao login na primeira ou última etapa
+  const solicitarCodigo = async () => {
+    if (!email.includes('@')) return
+    setLoading(true)
+    setErro('')
+    try {
+      const resposta = await fetch('https://seu-backend.com/api/auth/esqueci-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (!resposta.ok) {
+        const dados = await resposta.json()
+        throw new Error(dados.mensagem || 'Erro ao enviar o código.')
+      }
+      setEtapa('codigo')
+    } catch (err: any) {
+      setErro(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const validarCodigo = async () => {
+    const codigoString = codigo.join('')
+    if (codigoString.length < 6) return
+    setLoading(true)
+    setErro('')
+    try {
+      const resposta = await fetch('https://seu-backend.com/api/auth/validar-codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, codigo: codigoString }),
+      })
+      if (!resposta.ok) {
+        const dados = await resposta.json()
+        throw new Error(dados.mensagem || 'Código inválido.')
+      }
+      setEtapa('nova-senha')
+    } catch (err: any) {
+      setErro(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const atualizarSenhaFinal = async () => {
+    if (!senhasConferem) return
+    setLoading(true)
+    setErro('')
+    try {
+      const resposta = await fetch('https://seu-backend.com/api/auth/redefinir-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, novaSenha: senha }),
+      })
+      if (!resposta.ok) {
+        const dados = await resposta.json()
+        throw new Error(dados.mensagem || 'Erro ao redefinir a senha.')
+      }
+      setEtapa('sucesso')
+    } catch (err: any) {
+      setErro(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const voltar = () => {
+    setErro('')
     if (etapa === 'email' || etapa === 'sucesso') onNavigate('login')
     if (etapa === 'codigo') setEtapa('email')
     if (etapa === 'nova-senha') setEtapa('codigo')
@@ -67,7 +134,6 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
-      {/* PAINEL ESQUERDO - Fixado com h-full */}
       <div className="hidden lg:flex w-1/2 h-full bg-brand-500 relative flex-col justify-center items-center p-12 overflow-hidden">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-600 rounded-full mix-blend-overlay filter blur-[100px]" />
@@ -111,9 +177,7 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
         </div>
       </div>
 
-      {/* PAINEL DIREITO - Scroll isolado com centralização automática */}
       <div className="w-full lg:w-1/2 h-full overflow-y-auto flex flex-col relative">
-        {/* Cabeçalho Flutuante */}
         <div className="absolute top-0 left-0 w-full px-6 py-6 flex items-center bg-white/80 backdrop-blur-md z-10 lg:bg-transparent lg:backdrop-blur-none">
           <button
             onClick={voltar}
@@ -124,9 +188,7 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
           </button>
         </div>
 
-        {/* Container do formulário centralizado com m-auto */}
         <div className="w-full max-w-md m-auto px-6 py-24 lg:px-12 flex flex-col">
-          {/* Logo (apenas mobile) */}
           <div className="flex flex-col items-center mb-8 lg:hidden">
             <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
               <KeyRound className="w-8 h-8 text-brand-500" />
@@ -136,7 +198,6 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
 
           {etapa !== 'sucesso' && (
             <>
-              {/* Indicador de etapas */}
               <div className="flex items-center gap-2 mb-8" aria-hidden="true">
                 {etapas.map((item, indice) => (
                   <div key={item.id} className="flex-1">
@@ -158,7 +219,12 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
             </>
           )}
 
-          {/* ETAPA 1 - E-mail */}
+          {erro && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-xl mb-4">
+              {erro}
+            </div>
+          )}
+
           {etapa === 'email' && (
             <div>
               <h2 className="text-2xl lg:text-3xl font-bold text-slate-900">
@@ -187,11 +253,11 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
               </div>
 
               <button
-                onClick={() => setEtapa('codigo')}
-                disabled={!email.includes('@')}
-                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8"
+                onClick={solicitarCodigo}
+                disabled={!email.includes('@') || loading}
+                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8 cursor-pointer"
               >
-                Enviar código
+                {loading ? 'Enviando...' : 'Enviar código'}
               </button>
 
               <p className="text-center text-slate-600 text-sm mt-8">
@@ -206,7 +272,6 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
             </div>
           )}
 
-          {/* ETAPA 2 - Código */}
           {etapa === 'codigo' && (
             <div>
               <h2 className="text-2xl lg:text-3xl font-bold text-slate-900">
@@ -240,31 +305,32 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
               </div>
 
               <button
-                onClick={() => setEtapa('nova-senha')}
-                disabled={!codigoCompleto}
-                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8"
+                onClick={validarCodigo}
+                disabled={!codigoCompleto || loading}
+                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8 cursor-pointer"
               >
-                Verificar código
+                {loading ? 'Verificando...' : 'Verificar código'}
               </button>
 
               <p className="text-center text-slate-600 text-sm mt-8">
                 Não recebeu o código?{' '}
-                <button className="text-brand-600 font-semibold hover:underline outline-none bg-transparent border-none p-0 cursor-pointer">
+                <button 
+                  onClick={solicitarCodigo}
+                  className="text-brand-600 font-semibold hover:underline outline-none bg-transparent border-none p-0 cursor-pointer"
+                >
                   Reenviar
                 </button>
               </p>
             </div>
           )}
 
-          {/* ETAPA 3 - Nova senha */}
           {etapa === 'nova-senha' && (
             <div>
               <h2 className="text-2xl lg:text-3xl font-bold text-slate-900">
                 Crie uma nova senha
               </h2>
               <p className="text-slate-500 mt-2 mb-8">
-                Sua nova senha precisa ter pelo menos 8 caracteres e ser
-                diferente da anterior.
+                Sua nova senha precisa ter pelo menos 8 caracteres e conter pelo menos um número.
               </p>
 
               <div className="space-y-5">
@@ -290,7 +356,7 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
                       aria-label={
                         mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'
                       }
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 outline-none"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 outline-none cursor-pointer"
                     >
                       {mostrarSenha ? (
                         <EyeOff className="w-5 h-5" />
@@ -326,11 +392,11 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
                 <ul className="space-y-2 pt-1">
                   <li className="flex items-center gap-2 text-sm">
                     <Check
-                      className={`w-4 h-4 ${senha.length >= 8 ? 'text-brand-600' : 'text-slate-300'}`}
+                      className={`w-4 h-4 ${tamanhoValido ? 'text-brand-600' : 'text-slate-300'}`}
                     />
                     <span
                       className={
-                        senha.length >= 8 ? 'text-slate-700' : 'text-slate-400'
+                        tamanhoValido ? 'text-slate-700' : 'text-slate-400'
                       }
                     >
                       Pelo menos 8 caracteres
@@ -338,11 +404,11 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <Check
-                      className={`w-4 h-4 ${/\d/.test(senha) ? 'text-brand-600' : 'text-slate-300'}`}
+                      className={`w-4 h-4 ${contemNumero ? 'text-brand-600' : 'text-slate-300'}`}
                     />
                     <span
                       className={
-                        /\d/.test(senha) ? 'text-slate-700' : 'text-slate-400'
+                        contemNumero ? 'text-slate-700' : 'text-slate-400'
                       }
                     >
                       Contém ao menos um número
@@ -352,16 +418,15 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
               </div>
 
               <button
-                onClick={() => setEtapa('sucesso')}
-                disabled={!senhasConferem}
-                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8"
+                onClick={atualizarSenhaFinal}
+                disabled={!senhasConferem || loading}
+                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors shadow-sm mt-8 cursor-pointer"
               >
-                Redefinir senha
+                {loading ? 'Salvando...' : 'Redefinir senha'}
               </button>
             </div>
           )}
 
-          {/* ETAPA 4 - Sucesso */}
           {etapa === 'sucesso' && (
             <div className="text-center">
               <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -376,7 +441,7 @@ export function RedefinirSenha({ onNavigate }: RedefinirSenhaProps) {
               </p>
               <button 
                 onClick={() => onNavigate('login')}
-                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors shadow-sm"
+                className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors shadow-sm cursor-pointer"
               >
                 Ir para o login
               </button>

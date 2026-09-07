@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 interface CadastroProps {
@@ -5,10 +6,88 @@ interface CadastroProps {
 }
 
 export function Cadastro({ onNavigate }: CadastroProps) {
+  const [nome, setNome] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [dataNascimento, setDataNascimento] = useState('')
+  const [senha, setSenha] = useState('')
+  const [confirmarSenha, setConfirmarSenha] = useState('')
+  const [termoAceito, setTermoAceito] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [erro, setErro] = useState('')
+
+  const handleDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let valor = e.target.value.replace(/\D/g, '')
+    if (valor.length > 8) valor = valor.slice(0, 8)
+
+    if (valor.length > 4) {
+      valor = `${valor.slice(0, 2)}/${valor.slice(2, 4)}/${valor.slice(4)}`
+    } else if (valor.length > 2) {
+      valor = `${valor.slice(0, 2)}/${valor.slice(2)}`
+    }
+
+    setDataNascimento(valor)
+  }
+
+  const handleCadastro = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErro('')
+
+    if (senha !== confirmarSenha) {
+      setErro('As senhas não coincidem.')
+      return
+    }
+
+    if (!termoAceito) {
+      setErro('Você precisa aceitar os termos de uso.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const resposta = await fetch('/api/cadastrar/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome,
+          nome_usuario: username, // Correção: enviado como "nome_usuario" para o FastAPI
+          email,
+          data_nascimento: dataNascimento,
+          senha,
+        }),
+      })
+
+      const textoResposta = await resposta.text()
+      let dados: any = {}
+      
+      // Correção: Protege o parse caso o servidor devolva texto puro (evita o erro JSON.parse)
+      try {
+        dados = textoResposta ? JSON.parse(textoResposta) : {}
+      } catch {
+        dados = { detail: textoResposta } 
+      }
+
+      if (!resposta.ok) {
+        let msgErro = typeof dados.detail === 'string' ? dados.detail : (dados.mensagem || 'Erro ao realizar o cadastro.')
+        if (Array.isArray(dados.detail)) msgErro = dados.detail[0]?.msg || 'Dados inválidos enviados ao servidor.'
+        throw new Error(msgErro)
+      }
+
+      onNavigate('login')
+    } catch (err: any) {
+      setErro(err.message || 'Erro de comunicação com o servidor.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen bg-white overflow-hidden">
       <div className="hidden lg:flex w-1/2 bg-slate-900 relative flex-col justify-center items-center p-12 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-25 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500 rounded-full mix-blend-overlay filter blur-[100px]"></div>
         </div>
 
@@ -62,7 +141,7 @@ export function Cadastro({ onNavigate }: CadastroProps) {
         <div className="px-4 py-4 flex items-center sticky top-0 bg-white/80 backdrop-blur-md z-10 lg:hidden">
           <button 
             onClick={() => onNavigate('login')}
-            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none">
+            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none cursor-pointer">
             <ArrowLeft className="w-6 h-6" />
           </button>
         </div>
@@ -83,7 +162,13 @@ export function Cadastro({ onNavigate }: CadastroProps) {
             </p>
           </div>
 
-          <div className="space-y-4 lg:space-y-6">
+          {erro && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-xl mb-6">
+              {erro}
+            </div>
+          )}
+
+          <form onSubmit={handleCadastro} className="space-y-4 lg:space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-1.5 lg:space-y-2">
                 <label className="block text-sm font-medium text-slate-700">
@@ -91,6 +176,8 @@ export function Cadastro({ onNavigate }: CadastroProps) {
                 </label>
                 <input
                   type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
                   placeholder="Seu nome"
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                 />
@@ -98,11 +185,42 @@ export function Cadastro({ onNavigate }: CadastroProps) {
 
               <div className="space-y-1.5 lg:space-y-2">
                 <label className="block text-sm font-medium text-slate-700">
+                  Nome de usuário
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="seu_usuario"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              <div className="space-y-1.5 lg:space-y-2">
+                <label className="block text-sm font-medium text-slate-700">
                   E-mail
                 </label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                />
+              </div>
+
+              <div className="space-y-1.5 lg:space-y-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Data de nascimento
+                </label>
+                <input
+                  type="text"
+                  value={dataNascimento}
+                  onChange={handleDataChange}
+                  placeholder="DD/MM/AAAA"
+                  maxLength={10}
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                 />
               </div>
@@ -115,6 +233,8 @@ export function Cadastro({ onNavigate }: CadastroProps) {
                 </label>
                 <input
                   type="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                 />
@@ -126,6 +246,8 @@ export function Cadastro({ onNavigate }: CadastroProps) {
                 </label>
                 <input
                   type="password"
+                  value={confirmarSenha}
+                  onChange={(e) => setConfirmarSenha(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                 />
@@ -136,6 +258,8 @@ export function Cadastro({ onNavigate }: CadastroProps) {
               <input
                 type="checkbox"
                 id="terms"
+                checked={termoAceito}
+                onChange={(e) => setTermoAceito(e.target.checked)}
                 className="mt-1 w-4 h-4 lg:w-5 lg:h-5 text-brand-500 border-slate-300 rounded focus:ring-brand-500 cursor-pointer"
               />
               <label
@@ -160,11 +284,12 @@ export function Cadastro({ onNavigate }: CadastroProps) {
             </div>
 
             <button 
-              onClick={() => onNavigate('conversa')}
-              className="w-full py-3.5 lg:py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors shadow-sm mt-6 lg:mt-8 lg:text-lg cursor-pointer">
-              Criar Conta
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 lg:py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors shadow-sm mt-6 lg:mt-8 lg:text-lg cursor-pointer disabled:opacity-50">
+              {loading ? 'Criando conta...' : 'Criar Conta'}
             </button>
-          </div>
+          </form>
 
           <div className="mt-8 lg:mt-10 text-center">
             <p className="text-slate-600 text-sm lg:text-base">

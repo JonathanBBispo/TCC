@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   Edit2,
   Settings,
@@ -16,14 +17,57 @@ interface PerfilProps {
   onNavigate: (screen: string) => void;
 }
 
+interface PerfilData {
+  nome: string;
+  username: string;
+  conversas: string;
+  contatos: string;
+  redes: number;
+}
+
 export function Perfil({ onNavigate }: PerfilProps) {
+  const [perfil, setPerfil] = useState<PerfilData | null>(null)
+
+  useEffect(() => {
+    async function carregarPerfil() {
+      try {
+        const resposta = await fetch('/api/listar/usuarios/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        const usuarios = await resposta.json()
+        
+        if (resposta.ok && Array.isArray(usuarios)) {
+          const emailLogado = localStorage.getItem('userEmail')
+          const usuarioLogado = usuarios.find((u: any) => u.email === emailLogado)
+
+          if (usuarioLogado) {
+            let dbUsername = usuarioLogado.nome_usuario || usuarioLogado.username || usuarioLogado.email?.split('@')[0] || 'usuario'
+            dbUsername = dbUsername.replace(/^@/, '')
+
+            setPerfil({
+              nome: usuarioLogado.nome || 'Usuário',
+              username: `@${dbUsername}`,
+              conversas: '0',
+              contatos: '0',
+              redes: 0
+            })
+          }
+        }
+      } catch (erro) {
+        console.error('Erro ao carregar dados do perfil:', erro)
+      }
+    }
+
+    carregarPerfil()
+  }, [])
+
   return (
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
-      {/* MOBILE LAYOUT */}
       <div className="flex flex-col h-full w-full overflow-y-auto lg:hidden">
-        {/* Header */}
         <div className="px-4 py-4 flex items-center justify-between bg-white sticky top-0 z-10 border-b border-slate-100">
-          <div className="w-10"></div> {/* Spacer */}
+          <div className="w-10"></div>
           <h1 className="text-lg font-bold text-slate-900">Meu Perfil</h1>
           <button 
             onClick={() => onNavigate('editar-perfil')}
@@ -33,7 +77,6 @@ export function Perfil({ onNavigate }: PerfilProps) {
           </button>
         </div>
 
-        {/* Profile Info */}
         <div className="bg-white px-6 py-8 flex flex-col items-center border-b border-slate-200">
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-brand-100 rounded-full scale-110"></div>
@@ -42,32 +85,26 @@ export function Perfil({ onNavigate }: PerfilProps) {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900">Ana Clara</h2>
-          <p className="text-slate-500 font-medium">@anaclara</p>
+          <h2 className="text-2xl font-bold text-slate-900">{perfil?.nome || 'Carregando...'}</h2>
+          <p className="text-slate-500 font-medium">{perfil?.username || '@...'}</p>
 
-          <p className="text-center text-slate-600 mt-4 text-sm max-w-[280px]">
-            Gerenciando as redes sociais da minha loja. Adoro café e design!
-            ☕️✨
-          </p>
-
-          {/* Stats */}
           <div className="flex w-full justify-between mt-8 pt-6 border-t border-slate-100">
             <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">1.2k</p>
+              <p className="text-xl font-bold text-slate-900">{perfil?.conversas || '0'}</p>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                 Conversas
               </p>
             </div>
             <div className="w-px bg-slate-200"></div>
             <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">850</p>
+              <p className="text-xl font-bold text-slate-900">{perfil?.contatos || '0'}</p>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                 Contatos
               </p>
             </div>
             <div className="w-px bg-slate-200"></div>
             <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">3</p>
+              <p className="text-xl font-bold text-slate-900">{perfil?.redes || '0'}</p>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                 Redes
               </p>
@@ -75,7 +112,6 @@ export function Perfil({ onNavigate }: PerfilProps) {
           </div>
         </div>
 
-        {/* Connected Networks */}
         <div className="px-6 py-6">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
             Redes Sociais Conectadas
@@ -95,46 +131,9 @@ export function Perfil({ onNavigate }: PerfilProps) {
                 WhatsApp
               </span>
             </div>
-            <div className="flex flex-col items-center gap-2 min-w-[64px]">
-              <div className="w-14 h-14 bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] rounded-full flex items-center justify-center shadow-sm">
-                <svg
-                  className="w-7 h-7 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                </svg>
-              </div>
-              <span className="text-xs font-medium text-slate-700">
-                Instagram
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-2 min-w-[64px]">
-              <div className="w-14 h-14 bg-[#0088CC] rounded-full flex items-center justify-center shadow-sm">
-                <svg
-                  className="w-7 h-7 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-                </svg>
-              </div>
-              <span className="text-xs font-medium text-slate-700">
-                Telegram
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-2 min-w-[64px]">
-              <div className="w-14 h-14 bg-slate-200 rounded-full flex items-center justify-center border border-dashed border-slate-300">
-                <span className="text-2xl text-slate-400">+</span>
-              </div>
-              <span className="text-xs font-medium text-slate-500">
-                Conectar
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Menu List */}
         <div className="bg-white border-y border-slate-200 mb-8">
           <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
             <div className="flex items-center gap-3 text-slate-700">
@@ -165,7 +164,11 @@ export function Perfil({ onNavigate }: PerfilProps) {
             <ChevronRight className="w-5 h-5 text-slate-300" />
           </button>
           <button 
-            onClick={() => onNavigate('login')}
+            onClick={() => {
+              localStorage.removeItem('token')
+              localStorage.removeItem('userEmail')
+              onNavigate('login')
+            }}
             className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3 text-red-600">
@@ -176,9 +179,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
         </div>
       </div>
 
-      {/* DESKTOP LAYOUT */}
       <div className="hidden lg:flex h-full w-full overflow-hidden">
-        {/* LEFT SIDEBAR */}
         <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20 h-full">
           <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
             <button 
@@ -199,7 +200,10 @@ export function Perfil({ onNavigate }: PerfilProps) {
             <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <Settings className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden cursor-pointer">
+            <button 
+              onClick={() => onNavigate('perfil')}
+              className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden cursor-pointer"
+            >
               <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
                 <User className="w-5 h-5" />
               </div>
@@ -207,7 +211,6 @@ export function Perfil({ onNavigate }: PerfilProps) {
           </div>
         </div>
 
-        {/* MIDDLE COLUMN - Profile Info */}
         <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 h-full overflow-y-auto">
           <div className="p-8 flex flex-col items-center">
             <h1 className="text-2xl font-bold text-slate-900 w-full mb-8">
@@ -221,32 +224,26 @@ export function Perfil({ onNavigate }: PerfilProps) {
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">Ana Clara</h2>
-            <p className="text-slate-500 font-medium text-lg">@anaclara</p>
+            <h2 className="text-2xl font-bold text-slate-900">{perfil?.nome || 'Carregando...'}</h2>
+            <p className="text-slate-500 font-medium text-lg">{perfil?.username || '@...'}</p>
 
-            <p className="text-center text-slate-600 mt-6 leading-relaxed">
-              Gerenciando as redes sociais da minha loja. Adoro café e design!
-              ☕️✨
-            </p>
-
-            {/* Stats */}
             <div className="flex w-full justify-between mt-10 pt-8 border-t border-slate-100">
               <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">1.2k</p>
+                <p className="text-2xl font-bold text-slate-900">{perfil?.conversas || '0'}</p>
                 <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                   Conversas
                 </p>
               </div>
               <div className="w-px bg-slate-200"></div>
               <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">850</p>
+                <p className="text-2xl font-bold text-slate-900">{perfil?.contatos || '0'}</p>
                 <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                   Contatos
                 </p>
               </div>
               <div className="w-px bg-slate-200"></div>
               <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">3</p>
+                <p className="text-2xl font-bold text-slate-900">{perfil?.redes || '0'}</p>
                 <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
                   Redes
                 </p>
@@ -255,10 +252,8 @@ export function Perfil({ onNavigate }: PerfilProps) {
           </div>
         </div>
 
-        {/* RIGHT MAIN AREA */}
         <div className="flex-1 h-full overflow-y-auto p-12 relative">
           <div className="max-w-4xl mx-auto">
-            {/* Top Actions */}
             <div className="flex justify-end mb-8">
               <button 
                 onClick={() => onNavigate('editar-perfil')}
@@ -270,7 +265,6 @@ export function Perfil({ onNavigate }: PerfilProps) {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              {/* Connected Networks Card */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                 <h3 className="text-lg font-bold text-slate-900 mb-6">
                   Redes Sociais Conectadas
@@ -306,76 +300,9 @@ export function Perfil({ onNavigate }: PerfilProps) {
                       WhatsApp
                     </span>
                   </div>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] rounded-2xl flex items-center justify-center shadow-sm relative">
-                      <svg
-                        className="w-8 h-8 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                      </svg>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center">
-                        <svg
-                          className="w-3 h-3 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium text-slate-700">
-                      Instagram
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-[#0088CC] rounded-2xl flex items-center justify-center shadow-sm relative">
-                      <svg
-                        className="w-8 h-8 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-                      </svg>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center">
-                        <svg
-                          className="w-3 h-3 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium text-slate-700">
-                      Telegram
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center border-2 border-dashed border-slate-300 hover:bg-slate-200 transition-colors cursor-pointer">
-                      <span className="text-3xl text-slate-400">+</span>
-                    </div>
-                    <span className="text-sm font-medium text-slate-500">
-                      Conectar
-                    </span>
-                  </div>
                 </div>
               </div>
 
-              {/* Menu Card */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-slate-100">
                   <h3 className="text-lg font-bold text-slate-900">
@@ -414,7 +341,11 @@ export function Perfil({ onNavigate }: PerfilProps) {
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
                   <button 
-                    onClick={() => onNavigate('login')}
+                    onClick={() => {
+                      localStorage.removeItem('token')
+                      localStorage.removeItem('userEmail')
+                      onNavigate('login')
+                    }}
                     className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-4 text-red-600">
