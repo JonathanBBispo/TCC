@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   ArrowLeft,
   Phone,
@@ -12,14 +12,21 @@ import {
   Image as ImageIcon,
   MessageSquare,
   Users,
-  BarChart2,
   Settings,
   Search,
+  ListOrdered,
+  User,
 } from 'lucide-react'
-export function Conversa() {
+
+interface ConversaProps {
+  onNavigate: (screen: string) => void;
+}
+
+export function Conversa({ onNavigate }: ConversaProps) {
   const [message, setMessage] = useState('')
+
   return (
-    <div className="h-[calc(100vh-4rem)] bg-[#E5DDD5]">
+    <div className="h-screen w-full bg-[#E5DDD5] overflow-hidden">
       {/* MOBILE LAYOUT */}
       <div className="flex flex-col h-full lg:hidden relative overflow-hidden">
         {/* Background Pattern (Subtle) */} 
@@ -34,7 +41,10 @@ export function Conversa() {
         {/* Header */}
         <div className="px-3 py-3 flex items-center justify-between bg-white sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
-            <button className="p-1.5 -ml-1.5 hover:bg-slate-100 rounded-full text-slate-600 transition-colors">
+            <button 
+              onClick={() => onNavigate('perfil')}
+              className="p-1.5 -ml-1.5 hover:bg-slate-100 rounded-full text-slate-600 transition-colors cursor-pointer outline-none"
+            >
               <ArrowLeft className="w-6 h-6" />
             </button>
 
@@ -65,13 +75,13 @@ export function Conversa() {
           </div>
 
           <div className="flex items-center gap-1 text-slate-500">
-            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
               <Video className="w-5 h-5" />
             </button>
-            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
               <Phone className="w-5 h-5" />
             </button>
-            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+            <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -79,14 +89,12 @@ export function Conversa() {
 
         {/* Chat Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 relative z-0">
-          {/* Date Separator */}
           <div className="flex justify-center my-4">
             <div className="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-slate-500 shadow-sm">
               Hoje
             </div>
           </div>
 
-          {/* Received Message */}
           <div className="flex justify-start">
             <div className="bg-white text-slate-800 px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm relative">
               <p className="text-[15px] leading-snug">
@@ -98,7 +106,6 @@ export function Conversa() {
             </div>
           </div>
 
-          {/* Sent Message */}
           <div className="flex justify-end">
             <div className="bg-brand-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm relative">
               <p className="text-[15px] leading-snug">
@@ -113,7 +120,6 @@ export function Conversa() {
             </div>
           </div>
 
-          {/* Received Message */}
           <div className="flex justify-start">
             <div className="bg-white text-slate-800 px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm relative">
               <p className="text-[15px] leading-snug">
@@ -125,7 +131,6 @@ export function Conversa() {
             </div>
           </div>
 
-          {/* Sent Message */}
           <div className="flex justify-end">
             <div className="bg-brand-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm relative">
               <p className="text-[15px] leading-snug">
@@ -140,7 +145,6 @@ export function Conversa() {
             </div>
           </div>
 
-          {/* Sent Image Attachment */}
           <div className="flex justify-end">
             <div className="bg-brand-500 p-1 rounded-2xl rounded-tr-sm max-w-[70%] shadow-sm relative">
               <div className="w-full aspect-square bg-brand-400 rounded-xl flex items-center justify-center mb-1">
@@ -155,7 +159,6 @@ export function Conversa() {
             </div>
           </div>
 
-          {/* Received Message */}
           <div className="flex justify-start">
             <div className="bg-white text-slate-800 px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm relative">
               <p className="text-[15px] leading-snug">
@@ -171,7 +174,7 @@ export function Conversa() {
         {/* Input Bar */}
         <div className="bg-slate-50 px-2 py-3 flex items-end gap-2 z-10">
           <div className="flex-1 bg-white rounded-3xl flex items-end border border-slate-200 shadow-sm">
-            <button className="p-3 text-slate-400 hover:text-slate-600 transition-colors">
+            <button className="p-3 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
               <Smile className="w-6 h-6" />
             </button>
             <textarea
@@ -184,12 +187,12 @@ export function Conversa() {
                 minHeight: '52px',
               }}
             ></textarea>
-            <button className="p-3 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45">
+            <button className="p-3 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45 cursor-pointer">
               <Paperclip className="w-6 h-6" />
             </button>
           </div>
 
-          <button className="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0">
+          <button className="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0 cursor-pointer">
             {message.trim() ? (
               <Send className="w-5 h-5 ml-1" />
             ) : (
@@ -200,41 +203,38 @@ export function Conversa() {
       </div>
 
       {/* DESKTOP LAYOUT */}
-      <div className="hidden lg:flex h-full overflow-hidden">
+      <div className="hidden lg:flex h-full overflow-hidden w-full">
         {/* LEFT SIDEBAR */}
-        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center mb-8 shadow-sm">
-            <MessageSquare className="w-6 h-6 text-white" />
-          </div>
-
-          <div className="flex flex-col gap-4 flex-1 w-full px-3">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 text-white transition-colors">
+        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20 h-full">
+          <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 text-white transition-colors cursor-pointer">
               <MessageSquare className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <Users className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
-              <BarChart2 className="w-6 h-6" />
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
+              <ListOrdered className="w-6 h-6" />
             </button>
           </div>
 
           <div className="flex flex-col gap-4 w-full px-3 mt-auto">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <Settings className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center border-2 border-transparent hover:border-slate-700 transition-colors p-0 overflow-hidden">
-              <img
-                src="https://i.pravatar.cc/150?img=32"
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+            <button 
+              onClick={() => onNavigate('perfil')}
+              className="w-full aspect-square rounded-xl flex items-center justify-center border-2 border-transparent hover:border-slate-700 transition-colors p-0 overflow-hidden cursor-pointer"
+            >
+              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
+                <User className="w-5 h-5" />
+              </div>
             </button>
           </div>
         </div>
 
         {/* MIDDLE COLUMN - Chat List */}
-        <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10">
+        <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 h-full">
           <div className="p-6 border-b border-slate-100">
             <h2 className="text-2xl font-bold text-slate-900 mb-6">
               Conversas
@@ -348,101 +348,11 @@ export function Conversa() {
                 </p>
               </div>
             </div>
-
-            <div className="p-4 border-b border-slate-100 flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors">
-              <div className="relative">
-                <img
-                  src="https://i.pravatar.cc/150?img=47"
-                  alt="Avatar"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#1877F2] rounded-full border-2 border-white flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium text-slate-900 truncate">
-                    Carlos Silva
-                  </h4>
-                  <span className="text-xs text-slate-500">Ontem</span>
-                </div>
-                <p className="text-sm text-slate-500 truncate">
-                  Podemos agendar uma reunião?
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 border-b border-slate-100 flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors">
-              <div className="relative">
-                <img
-                  src="https://i.pravatar.cc/150?img=5"
-                  alt="Avatar"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full border-2 border-white flex items-center justify-center">
-                  <svg
-                    className="w-2.5 h-2.5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium text-slate-900 truncate">
-                    João Souza
-                  </h4>
-                  <span className="text-xs text-slate-500">Segunda</span>
-                </div>
-                <p className="text-sm text-slate-500 truncate">
-                  Obrigado pelo suporte!
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 border-b border-slate-100 flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors">
-              <div className="relative">
-                <img
-                  src="https://i.pravatar.cc/150?img=12"
-                  alt="Avatar"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#0A66C2] rounded-full border-2 border-white flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium text-slate-900 truncate">
-                    Mariana Lima
-                  </h4>
-                  <span className="text-xs text-slate-500">Segunda</span>
-                </div>
-                <p className="text-sm text-slate-500 truncate">
-                  Gostaria de um orçamento.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 
         {/* RIGHT MAIN AREA - Chat */}
-        <div className="flex-1 flex flex-col bg-[#E5DDD5] relative">
+        <div className="flex-1 flex flex-col bg-[#E5DDD5] relative h-full">
           {/* Background Pattern */}
           <div
             className="absolute inset-0 opacity-5 pointer-events-none"
@@ -479,17 +389,17 @@ export function Conversa() {
               </div>
             </div>
             <div className="flex items-center gap-2 text-slate-500">
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors">
+              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
                 <Video className="w-5 h-5" />
               </button>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors">
+              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
                 <Phone className="w-5 h-5" />
               </button>
               <div className="w-px h-6 bg-slate-200 mx-1"></div>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors">
+              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
                 <Search className="w-5 h-5" />
               </button>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors">
+              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </div>
@@ -582,10 +492,10 @@ export function Conversa() {
           {/* Input Bar */}
           <div className="bg-slate-50 px-6 py-4 flex items-end gap-4 z-10 shrink-0">
             <div className="flex-1 bg-white rounded-3xl flex items-end border border-slate-200 shadow-sm">
-              <button className="p-4 text-slate-400 hover:text-slate-600 transition-colors">
+              <button className="p-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
                 <Smile className="w-6 h-6" />
               </button>
-              <button className="p-4 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45">
+              <button className="p-4 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45 cursor-pointer">
                 <Paperclip className="w-6 h-6" />
               </button>
               <textarea
@@ -600,7 +510,7 @@ export function Conversa() {
               ></textarea>
             </div>
 
-            <button className="w-14 h-14 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0">
+            <button className="w-14 h-14 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0 cursor-pointer">
               {message.trim() ? (
                 <Send className="w-6 h-6 ml-1" />
               ) : (

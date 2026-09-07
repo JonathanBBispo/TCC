@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Edit2,
   Settings,
@@ -28,7 +27,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
           <h1 className="text-lg font-bold text-slate-900">Meu Perfil</h1>
           <button 
             onClick={() => onNavigate('editar-perfil')}
-            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none"
+            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none cursor-pointer"
           >
             <Edit2 className="w-5 h-5" />
           </button>
@@ -167,7 +166,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
           </button>
           <button 
             onClick={() => onNavigate('login')}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3 text-red-600">
               <LogOut className="w-5 h-5" />
@@ -184,23 +183,23 @@ export function Perfil({ onNavigate }: PerfilProps) {
           <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
             <button 
               onClick={() => onNavigate('conversa')}
-              className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+              className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
             >
               <MessageSquare className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <Users className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <ListOrdered className="w-6 h-6" />
             </button>
           </div>
 
           <div className="flex flex-col gap-4 w-full px-3 mt-auto">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
               <Settings className="w-6 h-6" />
             </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden">
+            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden cursor-pointer">
               <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
                 <User className="w-5 h-5" />
               </div>
@@ -263,7 +262,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
             <div className="flex justify-end mb-8">
               <button 
                 onClick={() => onNavigate('editar-perfil')}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm outline-none"
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm outline-none cursor-pointer"
               >
                 <Edit2 className="w-4 h-4" />
                 Editar Perfil
@@ -384,7 +383,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
                   </h3>
                 </div>
                 <div className="flex flex-col">
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
+                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
                     <div className="flex items-center gap-4 text-slate-700">
                       <Settings className="w-5 h-5 text-slate-400" />
                       <span className="font-medium">
@@ -393,21 +392,21 @@ export function Perfil({ onNavigate }: PerfilProps) {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
+                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
                     <div className="flex items-center gap-4 text-slate-700">
                       <Bell className="w-5 h-5 text-slate-400" />
                       <span className="font-medium">Notificações</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
+                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
                     <div className="flex items-center gap-4 text-slate-700">
                       <Shield className="w-5 h-5 text-slate-400" />
                       <span className="font-medium">Privacidade</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
+                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
                     <div className="flex items-center gap-4 text-slate-700">
                       <HelpCircle className="w-5 h-5 text-slate-400" />
                       <span className="font-medium">Ajuda</span>
@@ -416,7 +415,7 @@ export function Perfil({ onNavigate }: PerfilProps) {
                   </button>
                   <button 
                     onClick={() => onNavigate('login')}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors"
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-4 text-red-600">
                       <LogOut className="w-5 h-5" />

@@ -6,6 +6,7 @@ import { Cadastro } from './screens/Cadastro'
 import { RedefinirSenha } from './screens/RedefinirSenha'
 import { Perfil } from './screens/Perfil'
 import { EditarPerfil } from './screens/EditarPerfil'
+import { Conversa } from './screens/Conversa' // Importando a tela de conversas
 
 export function App() {
   const screenInit = useScreenInit()
@@ -19,6 +20,7 @@ export function App() {
       case 'redefinir-senha': return <RedefinirSenha onNavigate={setActiveTab} />
       case 'perfil': return <Perfil onNavigate={setActiveTab} />
       case 'editar-perfil': return <EditarPerfil onNavigate={setActiveTab} />
+      case 'conversa': return <Conversa onNavigate={setActiveTab} /> // Rota para exibir as conversas
       default: return <Login onNavigate={setActiveTab} />
     }
   }
