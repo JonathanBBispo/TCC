@@ -38,6 +38,26 @@ export function Cadastro({ onNavigate }: CadastroProps) {
       return
     }
 
+    if (dataNascimento.length < 10) {
+      setErro('Data de nascimento inválida.')
+      return
+    }
+
+    const [dia, mes, ano] = dataNascimento.split('/')
+    const dataNasc = new Date(Number(ano), Number(mes) - 1, Number(dia))
+    const hoje = new Date()
+    let idade = hoje.getFullYear() - dataNasc.getFullYear()
+    const diffMeses = hoje.getMonth() - dataNasc.getMonth()
+    
+    if (diffMeses < 0 || (diffMeses === 0 && hoje.getDate() < dataNasc.getDate())) {
+      idade--
+    }
+
+    if (idade < 18) {
+      setErro('Você precisa ter pelo menos 18 anos para se cadastrar.')
+      return
+    }
+
     if (!termoAceito) {
       setErro('Você precisa aceitar os termos de uso.')
       return
@@ -53,7 +73,7 @@ export function Cadastro({ onNavigate }: CadastroProps) {
         },
         body: JSON.stringify({
           nome,
-          nome_usuario: username, // Correção: enviado como "nome_usuario" para o FastAPI
+          nome_usuario: username,
           email,
           data_nascimento: dataNascimento,
           senha,
@@ -63,7 +83,6 @@ export function Cadastro({ onNavigate }: CadastroProps) {
       const textoResposta = await resposta.text()
       let dados: any = {}
       
-      // Correção: Protege o parse caso o servidor devolva texto puro (evita o erro JSON.parse)
       try {
         dados = textoResposta ? JSON.parse(textoResposta) : {}
       } catch {

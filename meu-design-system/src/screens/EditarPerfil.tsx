@@ -71,7 +71,6 @@ export function EditarPerfil({ onNavigate }: EditarPerfilProps) {
             setUserId(idEncontrado)
             
             setNome(dados.nome || '')
-            // Aqui puxamos o 'nome_usuario' que vem do back-end
             setUsername(dados.nome_usuario || dados.username || '')
             setEmail(dados.email || '')
             setDataNascimento(dados.data_nascimento || '')
@@ -96,6 +95,32 @@ export function EditarPerfil({ onNavigate }: EditarPerfilProps) {
       return
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setErro('Por favor, insira um e-mail válido.')
+      return
+    }
+
+    if (dataNascimento.length < 10) {
+      setErro('Data de nascimento inválida.')
+      return
+    }
+
+    const [dia, mes, ano] = dataNascimento.split('/')
+    const dataNasc = new Date(Number(ano), Number(mes) - 1, Number(dia))
+    const hoje = new Date()
+    let idade = hoje.getFullYear() - dataNasc.getFullYear()
+    const diffMeses = hoje.getMonth() - dataNasc.getMonth()
+    
+    if (diffMeses < 0 || (diffMeses === 0 && hoje.getDate() < dataNasc.getDate())) {
+      idade--
+    }
+
+    if (idade < 18) {
+      setErro('Você precisa ter pelo menos 18 anos.')
+      return
+    }
+
     setLoading(true)
     setErro('')
 
@@ -108,7 +133,7 @@ export function EditarPerfil({ onNavigate }: EditarPerfilProps) {
         },
         body: JSON.stringify({
           nome, 
-          nome_usuario: username, // Aqui enviamos como nome_usuario para bater com o banco
+          nome_usuario: username,
           email, 
           data_nascimento: dataNascimento,
           namePublic,
