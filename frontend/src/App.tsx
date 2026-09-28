@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useScreenInit } from './useScreenInit.tsx'
 
-import { Login } from './screens/Login'
-import { Cadastro } from './screens/Cadastro'
-import { RedefinirSenha } from './screens/RedefinirSenha'
-import { Perfil } from './screens/Perfil'
-import { EditarPerfil } from './screens/EditarPerfil'
-import { Conversa } from './screens/Conversa'
+import { Login } from './screens/Login.tsx'
+import { Cadastro } from './screens/Cadastro.tsx'
+import { RedefinirSenha } from './screens/RedefinirSenha.tsx'
+import { Perfil } from './screens/Perfil.tsx'
+import { EditarPerfil } from './screens/EditarPerfil.tsx'
+import { Conversa } from './screens/Conversa.tsx'
 
 export function App() {
   const screenInit = useScreenInit()
