@@ -271,6 +271,21 @@ interface OpcoesRequisicao {
   fallback: string;
 }
 
+/** O plano grátis do Render leva cerca de 1 min para acordar; a Vercel espera até 120 s pela resposta. */
+const TEMPO_LIMITE_MS = 90_000
+const STATUS_REPETIR = new Set([502, 503, 504])
+const ESPERA_REPETICAO_MS = 3_000
+
+async function buscarComTempoLimite(url: string, init: RequestInit): Promise<Response> {
+  const controle = new AbortController()
+  const timer = setTimeout(() => controle.abort(), TEMPO_LIMITE_MS)
+  try {
+    return await fetch(url, { ...init, signal: controle.signal })
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 /** Faz a chamada e transforma respostas 4xx/5xx em ApiError com a mensagem do back-end. */
 async function enviarRequisicao(caminho: string, opcoes: OpcoesRequisicao): Promise<Response> {
   const { method = 'GET', json, form, auth = false, fallback } = opcoes
@@ -295,9 +310,20 @@ async function enviarRequisicao(caminho: string, opcoes: OpcoesRequisicao): Prom
 
   let resposta: Response
   try {
-    resposta = await fetch(`${API_BASE}${caminho}`, { method, headers, body })
-  } catch {
-    throw new ApiError('Não foi possível conectar ao servidor. Verifique sua conexão.', 0)
+    resposta = await buscarComTempoLimite(`${API_BASE}${caminho}`, { method, headers, body })
+    // Enquanto o Render acorda ele pode responder 502/503/504: as leituras (GET) são repetidas uma vez.
+    if (method === 'GET' && STATUS_REPETIR.has(resposta.status)) {
+      await new Promise((resolver) => setTimeout(resolver, ESPERA_REPETICAO_MS))
+      resposta = await buscarComTempoLimite(`${API_BASE}${caminho}`, { method, headers, body })
+    }
+  } catch (erro) {
+    const tempoEsgotado = erro instanceof DOMException && erro.name === 'AbortError'
+    throw new ApiError(
+      tempoEsgotado
+        ? 'O servidor demorou para responder. Ele pode estar iniciando; tente novamente em instantes.'
+        : 'Não foi possível conectar ao servidor. Verifique sua conexão.',
+      0,
+    )
   }
 
   if (!resposta.ok) {
