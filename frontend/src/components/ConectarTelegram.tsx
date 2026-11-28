@@ -94,7 +94,8 @@ export function ConectarTelegram({ codUsuario, conectado, onConectado }: Conecta
 
     try {
       await enviarCodigoTelegram({ numero: paraNumeroInternacional(telefone) })
-      setConfirmacao(TELEFONE_VAZIO)
+      // Os campos da confirmação já vêm com o DDI, o DDD e o número informados; basta digitar o código.
+      setConfirmacao(telefone)
       setCodigo('')
       setEtapa('codigo')
     } catch (err) {
@@ -138,7 +139,7 @@ export function ConectarTelegram({ codUsuario, conectado, onConectado }: Conecta
   }
 
   return (
-    <div className="p-4 lg:px-8 lg:py-5">
+    <div className="px-5 py-4 lg:px-6 lg:py-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className={`relative w-10 h-10 ${cor} rounded-full flex items-center justify-center shrink-0`}>
@@ -214,7 +215,7 @@ export function ConectarTelegram({ codUsuario, conectado, onConectado }: Conecta
               <p className="text-sm text-slate-500">
                 Enviamos um código para o Telegram de{' '}
                 <span className="font-semibold text-slate-900">{formatarTelefone(telefone)}</span>.
-                Digite o número novamente e o código recebido para confirmar a conexão.
+                Confira o número abaixo e digite o código recebido para confirmar a conexão.
               </p>
               <CamposTelefone telefone={confirmacao} onChange={setConfirmacao} />
               <div className="space-y-1.5">

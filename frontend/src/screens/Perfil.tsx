@@ -1,18 +1,6 @@
 import { useState } from 'react'
-import {
-  Edit2,
-  Settings,
-  Bell,
-  Shield,
-  HelpCircle,
-  LogOut,
-  ChevronRight,
-  MessageSquare,
-  Users,
-  ListOrdered,
-  User,
-  Check,
-} from 'lucide-react'
+import { Check, ChevronRight, LogOut, MessageSquare, Pencil, Plus } from 'lucide-react'
+import { BarraLateral } from '../components/BarraLateral'
 import { REDES_SOCIAIS, ehConversaIndividual, redesConectadas } from '../redesSociais'
 import type { Sessao } from '../api'
 
@@ -22,17 +10,20 @@ interface PerfilProps {
   onLogout: () => Promise<void>;
 }
 
+const classeCartao = 'bg-white rounded-2xl border border-slate-200 shadow-sm'
+
 export function Perfil({ onNavigate, sessao, onLogout }: PerfilProps) {
   const [saindo, setSaindo] = useState(false)
   const { usuario, conversas } = sessao
 
-  const perfil = {
-    nome: usuario.nome || 'Usuário',
-    username: `@${usuario.nome_usuario.replace(/^@/, '')}`,
-    conversas: String(conversas.length),
-    contatos: String(conversas.filter(ehConversaIndividual).length),
-    redes: redesConectadas(conversas),
-  }
+  const nome = usuario.nome || 'Usuário'
+  const username = `@${usuario.nome_usuario.replace(/^@/, '')}`
+  const redes = redesConectadas(conversas)
+  const estatisticas = [
+    { rotulo: 'Conversas', valor: conversas.length },
+    { rotulo: 'Contatos', valor: conversas.filter(ehConversaIndividual).length },
+    { rotulo: 'Redes', valor: redes.length },
+  ]
 
   const handleSair = async () => {
     setSaindo(true)
@@ -41,312 +32,107 @@ export function Perfil({ onNavigate, sessao, onLogout }: PerfilProps) {
 
   return (
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
-      <div className="flex flex-col h-full w-full overflow-y-auto lg:hidden">
-        <div className="px-4 py-4 flex items-center justify-between bg-white sticky top-0 z-10 border-b border-slate-100">
-          <div className="w-10"></div>
-          <h1 className="text-lg font-bold text-slate-900">Meu Perfil</h1>
-          <button 
-            onClick={() => onNavigate('editar-perfil')}
-            className="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors outline-none cursor-pointer"
-          >
-            <Edit2 className="w-5 h-5" />
-          </button>
-        </div>
+      <BarraLateral ativa="perfil" onNavigate={onNavigate} />
 
-        <div className="bg-white px-6 py-8 flex flex-col items-center border-b border-slate-200">
-          <div className="relative mb-4">
-            <div className="absolute inset-0 bg-brand-100 rounded-full scale-110"></div>
-            <div className="relative w-24 h-24 rounded-full bg-slate-200 border-4 border-white shadow-sm flex items-center justify-center text-slate-400">
-              <User className="w-12 h-12" />
-            </div>
-          </div>
+      <main className="flex-1 h-full overflow-y-auto">
+        <div className="max-w-3xl mx-auto px-4 py-6 lg:px-10 lg:py-12 space-y-4 lg:space-y-6">
+          <h1 className="text-xl lg:text-2xl font-bold text-slate-900">Meu Perfil</h1>
 
-          <h2 className="text-2xl font-bold text-slate-900">{perfil.nome}</h2>
-          <p className="text-slate-500 font-medium">{perfil.username}</p>
-
-          <div className="flex w-full justify-between mt-8 pt-6 border-t border-slate-100">
-            <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">{perfil.conversas}</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                Conversas
-              </p>
-            </div>
-            <div className="w-px bg-slate-200"></div>
-            <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">{perfil.contatos}</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                Contatos
-              </p>
-            </div>
-            <div className="w-px bg-slate-200"></div>
-            <div className="text-center flex-1">
-              <p className="text-xl font-bold text-slate-900">{perfil.redes.length}</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                Redes
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-6 py-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
-            Redes Sociais Conectadas
-          </h3>
-          {perfil.redes.length > 0 && (
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {perfil.redes.map((rede) => {
-                const { nome, cor, Icone } = REDES_SOCIAIS[rede]
-                return (
-                  <div key={rede} className="flex flex-col items-center gap-2 min-w-[64px]">
-                    <div className={`w-14 h-14 ${cor} rounded-full flex items-center justify-center shadow-sm`}>
-                      <Icone className="w-8 h-8 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-slate-700">{nome}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-          {perfil.redes.length === 0 && (
-            <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-5 text-center">
-              <p className="text-sm text-slate-500">Nenhuma rede social conectada ainda.</p>
-              <button
-                onClick={() => onNavigate('editar-perfil')}
-                className="mt-2 text-sm text-brand-600 font-semibold hover:underline outline-none cursor-pointer"
+          <section className={`${classeCartao} p-5 lg:p-6`}>
+            <div className="flex flex-wrap items-center gap-4">
+              <div
+                aria-hidden="true"
+                className="w-16 h-16 lg:w-20 lg:h-20 shrink-0 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-2xl lg:text-3xl font-bold"
               >
-                Conectar uma rede
-              </button>
+                {nome.trim().charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl lg:text-2xl font-bold text-slate-900 truncate">{nome}</h2>
+                <p className="text-slate-500 font-medium truncate">{username}</p>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => onNavigate('editar-perfil')}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Editar perfil
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSair}
+                  disabled={saindo}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 font-medium rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer disabled:opacity-50"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {saindo ? 'Saindo...' : 'Sair'}
+                </button>
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="bg-white border-y border-slate-200 mb-8">
+            <dl className="grid grid-cols-3 mt-5 pt-5 border-t border-slate-100 divide-x divide-slate-200">
+              {estatisticas.map(({ rotulo, valor }) => (
+                <div key={rotulo} className="flex flex-col-reverse items-center">
+                  <dt className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">{rotulo}</dt>
+                  <dd className="text-xl lg:text-2xl font-bold text-slate-900">{valor}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          {/* No desktop as conversas ficam na barra lateral. */}
           <button
+            type="button"
             onClick={() => onNavigate('conversa')}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer"
+            className={`${classeCartao} lg:hidden w-full px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer`}
           >
-            <div className="flex items-center gap-3 text-slate-700">
+            <span className="flex items-center gap-3 font-medium text-slate-700">
               <MessageSquare className="w-5 h-5 text-slate-400" />
-              <span className="font-medium">Conversas</span>
-            </div>
+              Conversas
+            </span>
             <ChevronRight className="w-5 h-5 text-slate-300" />
           </button>
-          <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
-            <div className="flex items-center gap-3 text-slate-700">
-              <Settings className="w-5 h-5 text-slate-400" />
-              <span className="font-medium">Configurações de conta</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-          </button>
-          <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
-            <div className="flex items-center gap-3 text-slate-700">
-              <Bell className="w-5 h-5 text-slate-400" />
-              <span className="font-medium">Notificações</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-          </button>
-          <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
-            <div className="flex items-center gap-3 text-slate-700">
-              <Shield className="w-5 h-5 text-slate-400" />
-              <span className="font-medium">Privacidade</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-          </button>
-          <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100">
-            <div className="flex items-center gap-3 text-slate-700">
-              <HelpCircle className="w-5 h-5 text-slate-400" />
-              <span className="font-medium">Ajuda</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-          </button>
-          <button
-            onClick={handleSair}
-            disabled={saindo}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
-          >
-            <div className="flex items-center gap-3 text-red-600">
-              <LogOut className="w-5 h-5" />
-              <span className="font-medium">{saindo ? 'Saindo...' : 'Sair'}</span>
-            </div>
-          </button>
-        </div>
-      </div>
 
-      <div className="hidden lg:flex h-full w-full overflow-hidden">
-        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20 h-full">
-          <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
-            <button 
-              onClick={() => onNavigate('conversa')}
-              className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
-            >
-              <MessageSquare className="w-6 h-6" />
-            </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <Users className="w-6 h-6" />
-            </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <ListOrdered className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-4 w-full px-3 mt-auto">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <Settings className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={() => onNavigate('perfil')}
-              className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 border-2 border-brand-500 transition-colors p-0 overflow-hidden cursor-pointer"
-            >
-              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
-                <User className="w-5 h-5" />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 h-full overflow-y-auto">
-          <div className="p-8 flex flex-col items-center">
-            <h1 className="text-2xl font-bold text-slate-900 w-full mb-8">
-              Meu Perfil
-            </h1>
-
-            <div className="relative mb-6">
-              <div className="absolute inset-0 bg-brand-100 rounded-full scale-110"></div>
-              <div className="relative w-32 h-32 rounded-full bg-slate-200 border-4 border-white shadow-sm flex items-center justify-center text-slate-400">
-                <User className="w-16 h-16" />
-              </div>
-            </div>
-
-            <h2 className="text-2xl font-bold text-slate-900">{perfil.nome}</h2>
-            <p className="text-slate-500 font-medium text-lg">{perfil.username}</p>
-
-            <div className="flex w-full justify-between mt-10 pt-8 border-t border-slate-100">
-              <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">{perfil.conversas}</p>
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                  Conversas
-                </p>
-              </div>
-              <div className="w-px bg-slate-200"></div>
-              <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">{perfil.contatos}</p>
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                  Contatos
-                </p>
-              </div>
-              <div className="w-px bg-slate-200"></div>
-              <div className="text-center flex-1">
-                <p className="text-2xl font-bold text-slate-900">{perfil.redes.length}</p>
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">
-                  Redes
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1 h-full overflow-y-auto p-12 relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex justify-end mb-8">
-              <button 
+          <section className={`${classeCartao} p-5 lg:p-6`}>
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h3 className="text-base lg:text-lg font-bold text-slate-900">Redes sociais conectadas</h3>
+              <button
+                type="button"
                 onClick={() => onNavigate('editar-perfil')}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl transition-colors shadow-sm outline-none cursor-pointer"
+                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-brand-600 border border-brand-200 hover:bg-brand-50 rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer"
               >
-                <Edit2 className="w-4 h-4" />
-                Editar Perfil
+                <Plus className="w-4 h-4" />
+                Conectar rede
               </button>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">
-                  Redes Sociais Conectadas
-                </h3>
-
-                {perfil.redes.length > 0 && (
-                  <div className="grid grid-cols-3 gap-6">
-                    {perfil.redes.map((rede) => {
-                      const { nome, cor, Icone } = REDES_SOCIAIS[rede]
-                      return (
-                        <div key={rede} className="flex flex-col items-center gap-3">
-                          <div className={`w-16 h-16 ${cor} rounded-2xl flex items-center justify-center shadow-sm relative`}>
-                            <Icone className="w-9 h-9 text-white" />
-                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                            </div>
-                          </div>
-                          <span className="text-sm font-medium text-slate-700">{nome}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-                {perfil.redes.length === 0 && (
-                  <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center">
-                    <p className="text-sm text-slate-500">Nenhuma rede social conectada ainda.</p>
-                    <button
-                      onClick={() => onNavigate('editar-perfil')}
-                      className="mt-2 text-sm text-brand-600 font-semibold hover:underline outline-none cursor-pointer"
+            {redes.length > 0 ? (
+              <ul className="flex flex-wrap gap-3">
+                {redes.map((rede) => {
+                  const { nome: nomeRede, cor, Icone } = REDES_SOCIAIS[rede]
+                  return (
+                    <li
+                      key={rede}
+                      className="flex items-center gap-2.5 py-1.5 pl-1.5 pr-3 bg-slate-50 border border-slate-200 rounded-full"
                     >
-                      Conectar uma rede
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                  <h3 className="text-lg font-bold text-slate-900">
-                    Conta e Preferências
-                  </h3>
-                </div>
-                <div className="flex flex-col">
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
-                    <div className="flex items-center gap-4 text-slate-700">
-                      <Settings className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium">
-                        Configurações de conta
+                      <span className={`w-8 h-8 ${cor} rounded-full flex items-center justify-center`}>
+                        <Icone className="w-5 h-5 text-white" />
                       </span>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-300" />
-                  </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
-                    <div className="flex items-center gap-4 text-slate-700">
-                      <Bell className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium">Notificações</span>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-300" />
-                  </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
-                    <div className="flex items-center gap-4 text-slate-700">
-                      <Shield className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium">Privacidade</span>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-300" />
-                  </button>
-                  <button className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer">
-                    <div className="flex items-center gap-4 text-slate-700">
-                      <HelpCircle className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium">Ajuda</span>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-300" />
-                  </button>
-                  <button
-                    onClick={handleSair}
-                    disabled={saindo}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    <div className="flex items-center gap-4 text-red-600">
-                      <LogOut className="w-5 h-5" />
-                      <span className="font-medium">{saindo ? 'Saindo...' : 'Sair'}</span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                      <span className="text-sm font-medium text-slate-700">{nomeRede}</span>
+                      <Check className="w-4 h-4 text-brand-500" strokeWidth={3} aria-label="Conectado" />
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="rounded-xl border border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500">
+                Nenhuma rede social conectada ainda.
+              </p>
+            )}
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

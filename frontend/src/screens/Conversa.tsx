@@ -1,18 +1,8 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import {
   ArrowLeft,
-  Phone,
-  Video,
-  MoreVertical,
-  Paperclip,
-  Smile,
-  Mic,
   Send,
-  MessageSquare,
-  Users,
-  Settings,
   Search,
-  ListOrdered,
   User,
   RefreshCw,
   LoaderCircle,
@@ -34,6 +24,7 @@ import {
 } from '../api'
 import { REDES_SOCIAIS, redeDoApp, redesConectadas, type RedeSocial } from '../redesSociais'
 import { BolhaMensagem, type MensagemTela } from '../components/BolhaMensagem'
+import { BarraLateral } from '../components/BarraLateral'
 
 interface ConversaProps {
   onNavigate: (screen: string) => void;
@@ -630,6 +621,7 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
   )
 
   const placeholderMensagem = appDesconectado ? 'Reconecte-se para enviar mensagens' : 'Mensagem...'
+  const semTexto = !message.trim()
 
   return (
     <div className="h-screen w-full bg-[#E5DDD5] overflow-hidden">
@@ -669,18 +661,7 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 text-slate-500 shrink-0">
-                {botaoAtualizar('p-2')}
-                <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                  <Video className="w-5 h-5" />
-                </button>
-                <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                  <Phone className="w-5 h-5" />
-                </button>
-                <button className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              </div>
+              <div className="text-slate-500 shrink-0">{botaoAtualizar('p-2')}</div>
             </div>
 
             <div ref={areaMobileRef} className="flex-1 overflow-y-auto p-4 space-y-4 relative z-0">
@@ -691,9 +672,6 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
 
             <form onSubmit={handleEnviarMensagem} className="bg-slate-50 px-2 py-3 flex items-end gap-2 z-10">
               <div className="flex-1 bg-white rounded-3xl flex items-end border border-slate-200 shadow-sm">
-                <button type="button" className="p-3 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
-                  <Smile className="w-6 h-6" />
-                </button>
                 <textarea
                   rows={1}
                   value={message}
@@ -702,29 +680,20 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
                   disabled={appDesconectado}
                   placeholder={placeholderMensagem}
                   aria-label="Mensagem"
-                  className="flex-1 max-h-32 py-3.5 bg-transparent outline-none resize-none text-[15px] text-slate-900 placeholder:text-slate-400 disabled:cursor-not-allowed"
+                  className="flex-1 max-h-32 px-4 py-3.5 bg-transparent outline-none resize-none text-[15px] text-slate-900 placeholder:text-slate-400 disabled:cursor-not-allowed"
                   style={{
                     minHeight: '52px',
                   }}
                 ></textarea>
-                <button type="button" className="p-3 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45 cursor-pointer">
-                  <Paperclip className="w-6 h-6" />
-                </button>
               </div>
 
               <button
                 type="submit"
-                disabled={enviando || appDesconectado}
+                disabled={semTexto || enviando || appDesconectado}
                 aria-label="Enviar mensagem"
                 className="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {enviando ? (
-                  <LoaderCircle className="w-5 h-5 animate-spin" />
-                ) : message.trim() ? (
-                  <Send className="w-5 h-5 ml-1" />
-                ) : (
-                  <Mic className="w-5 h-5" />
-                )}
+                {enviando ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 ml-0.5" />}
               </button>
             </form>
           </>
@@ -775,33 +744,7 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
       </div>
 
       <div className="hidden lg:flex h-full overflow-hidden w-full">
-        <div className="w-20 bg-slate-900 flex flex-col items-center py-6 border-r border-slate-800 shrink-0 z-20 h-full">
-          <div className="flex flex-col gap-4 flex-1 w-full px-3 pt-2">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center bg-slate-800 text-white transition-colors cursor-pointer">
-              <MessageSquare className="w-6 h-6" />
-            </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <Users className="w-6 h-6" />
-            </button>
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <ListOrdered className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-4 w-full px-3 mt-auto">
-            <button className="w-full aspect-square rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-              <Settings className="w-6 h-6" />
-            </button>
-            <button
-              onClick={() => onNavigate('perfil')}
-              className="w-full aspect-square rounded-xl flex items-center justify-center border-2 border-transparent hover:border-slate-700 transition-colors p-0 overflow-hidden cursor-pointer"
-            >
-              <div className="w-full h-full bg-slate-700 flex items-center justify-center text-slate-300">
-                <User className="w-5 h-5" />
-              </div>
-            </button>
-          </div>
-        </div>
+        <BarraLateral ativa="conversa" onNavigate={onNavigate} />
 
         <div className="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 z-10 h-full">
           <div className="p-6 border-b border-slate-100">
@@ -862,22 +805,7 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 text-slate-500 shrink-0">
-              {botaoAtualizar('p-2.5')}
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                <Video className="w-5 h-5" />
-              </button>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                <Phone className="w-5 h-5" />
-              </button>
-              <div className="w-px h-6 bg-slate-200 mx-1"></div>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                <Search className="w-5 h-5" />
-              </button>
-              <button className="p-2.5 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            </div>
+            <div className="text-slate-500 shrink-0">{botaoAtualizar('p-2.5')}</div>
           </div>
 
           <div ref={areaDesktopRef} className="flex-1 overflow-y-auto p-8 space-y-6 relative z-0">
@@ -888,12 +816,6 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
 
           <form onSubmit={handleEnviarMensagem} className="bg-slate-50 px-6 py-4 flex items-end gap-4 z-10 shrink-0">
             <div className="flex-1 bg-white rounded-3xl flex items-end border border-slate-200 shadow-sm">
-              <button type="button" className="p-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
-                <Smile className="w-6 h-6" />
-              </button>
-              <button type="button" className="p-4 text-slate-400 hover:text-slate-600 transition-colors transform -rotate-45 cursor-pointer">
-                <Paperclip className="w-6 h-6" />
-              </button>
               <textarea
                 rows={1}
                 value={message}
@@ -908,7 +830,7 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
                       : 'Mensagem... (Enter envia, Shift+Enter quebra linha)'
                 }
                 aria-label="Mensagem"
-                className="flex-1 max-h-32 py-4 bg-transparent outline-none resize-none text-[15px] text-slate-900 placeholder:text-slate-400 disabled:cursor-not-allowed"
+                className="flex-1 max-h-32 px-5 py-4 bg-transparent outline-none resize-none text-[15px] text-slate-900 placeholder:text-slate-400 disabled:cursor-not-allowed"
                 style={{
                   minHeight: '56px',
                 }}
@@ -917,17 +839,11 @@ export function Conversa({ onNavigate, sessao, onSincronizarConversas, onReconec
 
             <button
               type="submit"
-              disabled={!conversaAtiva || enviando || appDesconectado}
+              disabled={!conversaAtiva || semTexto || enviando || appDesconectado}
               aria-label="Enviar mensagem"
               className="w-14 h-14 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-sm hover:bg-brand-600 transition-colors flex-shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {enviando ? (
-                <LoaderCircle className="w-6 h-6 animate-spin" />
-              ) : message.trim() ? (
-                <Send className="w-6 h-6 ml-1" />
-              ) : (
-                <Mic className="w-6 h-6" />
-              )}
+              {enviando ? <LoaderCircle className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6 ml-0.5" />}
             </button>
           </form>
         </div>

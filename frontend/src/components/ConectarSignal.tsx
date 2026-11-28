@@ -93,7 +93,7 @@ export function ConectarSignal({ codUsuario, conectado, onSincronizarConversas }
   }
 
   return (
-    <div className="p-4 lg:px-8 lg:py-5">
+    <div className="px-5 py-4 lg:px-6 lg:py-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className={`relative w-10 h-10 ${cor} rounded-full flex items-center justify-center shrink-0`}>
@@ -175,6 +175,8 @@ export function ConectarSignal({ codUsuario, conectado, onSincronizarConversas }
                 </li>
                 <li>Aponte a câmera para o QR code abaixo.</li>
               </ol>
+
+              <CamposTelefone telefone={telefone} somenteLeitura />
 
               {qrCode && (
                 <div className="flex justify-center">

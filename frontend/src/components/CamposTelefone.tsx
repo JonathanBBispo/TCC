@@ -3,10 +3,12 @@ import { classeCampo, formatarCelular, somenteDigitos, type Telefone } from '../
 
 interface CamposTelefoneProps {
   telefone: Telefone;
-  onChange: (telefone: Telefone) => void;
+  onChange?: (telefone: Telefone) => void;
+  /** Só exibe o número, sem permitir edição. */
+  somenteLeitura?: boolean;
 }
 
-export function CamposTelefone({ telefone, onChange }: CamposTelefoneProps) {
+export function CamposTelefone({ telefone, onChange, somenteLeitura = false }: CamposTelefoneProps) {
   const id = useId()
 
   return (
@@ -22,10 +24,11 @@ export function CamposTelefone({ telefone, onChange }: CamposTelefoneProps) {
           <input
             id={`${id}-ddi`}
             type="text"
+            readOnly={somenteLeitura}
             inputMode="numeric"
             autoComplete="tel-country-code"
             value={telefone.ddi}
-            onChange={(e) => onChange({ ...telefone, ddi: somenteDigitos(e.target.value, 3) })}
+            onChange={(e) => onChange?.({ ...telefone, ddi: somenteDigitos(e.target.value, 3) })}
             placeholder="55"
             className={`${classeCampo} pl-8 pr-3`}
           />
@@ -39,10 +42,11 @@ export function CamposTelefone({ telefone, onChange }: CamposTelefoneProps) {
         <input
           id={`${id}-ddd`}
           type="text"
+          readOnly={somenteLeitura}
           inputMode="numeric"
           autoComplete="tel-area-code"
           value={telefone.ddd}
-          onChange={(e) => onChange({ ...telefone, ddd: somenteDigitos(e.target.value, 2) })}
+          onChange={(e) => onChange?.({ ...telefone, ddd: somenteDigitos(e.target.value, 2) })}
           placeholder="11"
           className={`${classeCampo} px-4`}
         />
@@ -55,10 +59,11 @@ export function CamposTelefone({ telefone, onChange }: CamposTelefoneProps) {
         <input
           id={`${id}-celular`}
           type="text"
+          readOnly={somenteLeitura}
           inputMode="numeric"
           autoComplete="tel-local"
           value={formatarCelular(telefone.celular)}
-          onChange={(e) => onChange({ ...telefone, celular: somenteDigitos(e.target.value, 9) })}
+          onChange={(e) => onChange?.({ ...telefone, celular: somenteDigitos(e.target.value, 9) })}
           placeholder="91234-5678"
           className={`${classeCampo} px-4`}
         />
